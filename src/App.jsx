@@ -4,15 +4,44 @@ import './App.css'
 function App() {
   const [amount, setAmount] = useState('50000')
   const [months, setMonths] = useState('12')
+  const [appliedAmount, setAppliedAmount] = useState(50000)
+  const [appliedMonths, setAppliedMonths] = useState(12)
   const [activeTab, setActiveTab] = useState('summary')
   const [showSettings, setShowSettings] = useState(false)
   const [downPaymentPercent, setDownPaymentPercent] = useState(39.08)
   const [shortTermDownPaymentPercent, setShortTermDownPaymentPercent] = useState(39.08)
   const [longTermInterestRate, setLongTermInterestRate] = useState(13)
   const [shortTermInterestRate, setShortTermInterestRate] = useState(11)
+  const [draftDownPaymentPercent, setDraftDownPaymentPercent] = useState(39.08)
+  const [draftShortTermDownPaymentPercent, setDraftShortTermDownPaymentPercent] = useState(39.08)
+  const [draftLongTermInterestRate, setDraftLongTermInterestRate] = useState(13)
+  const [draftShortTermInterestRate, setDraftShortTermInterestRate] = useState(11)
 
-  const numericAmount = Number(amount) || 0
-  const numericMonths = Number(months) || 0
+  const numericAmount = appliedAmount
+  const numericMonths = appliedMonths
+
+  const openSettings = () => {
+    setDraftDownPaymentPercent(downPaymentPercent)
+    setDraftShortTermDownPaymentPercent(shortTermDownPaymentPercent)
+    setDraftLongTermInterestRate(longTermInterestRate)
+    setDraftShortTermInterestRate(shortTermInterestRate)
+    setShowSettings(true)
+  }
+
+  const saveSettings = () => {
+    setDownPaymentPercent(draftDownPaymentPercent)
+    setShortTermDownPaymentPercent(draftShortTermDownPaymentPercent)
+    setLongTermInterestRate(draftLongTermInterestRate)
+    setShortTermInterestRate(draftShortTermInterestRate)
+    setShowSettings(false)
+  }
+
+  const applyInputs = () => {
+    const parsedAmount = Math.max(0, Number(amount) || 0)
+    const parsedMonths = Math.max(0, Math.floor(Number(months) || 0))
+    setAppliedAmount(parsedAmount)
+    setAppliedMonths(parsedMonths)
+  }
 
   // Calculate EMI
   const initialInterestRate = 13 // 13% on initial amount
@@ -47,7 +76,7 @@ function App() {
             <button
               type="button"
               className="settings-btn"
-              onClick={() => setShowSettings((value) => !value)}
+              onClick={() => (showSettings ? setShowSettings(false) : openSettings())}
             >
               ⚙ Settings
             </button>
@@ -80,8 +109,8 @@ function App() {
                       min="0"
                       max="100"
                       step="0.01"
-                      value={downPaymentPercent}
-                      onChange={(e) => setDownPaymentPercent(Math.max(0, Number(e.target.value)))}
+                      value={draftDownPaymentPercent}
+                      onChange={(e) => setDraftDownPaymentPercent(Math.max(0, Number(e.target.value)))}
                       className="input-field"
                     />
                     <input
@@ -89,8 +118,8 @@ function App() {
                       min="0"
                       max="100"
                       step="0.01"
-                      value={downPaymentPercent}
-                      onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
+                      value={draftDownPaymentPercent}
+                      onChange={(e) => setDraftDownPaymentPercent(Number(e.target.value))}
                       className="slider"
                     />
                   </div>
@@ -103,8 +132,8 @@ function App() {
                       min="0"
                       max="100"
                       step="0.01"
-                      value={shortTermDownPaymentPercent}
-                      onChange={(e) => setShortTermDownPaymentPercent(Math.max(0, Number(e.target.value)))}
+                      value={draftShortTermDownPaymentPercent}
+                      onChange={(e) => setDraftShortTermDownPaymentPercent(Math.max(0, Number(e.target.value)))}
                       className="input-field"
                     />
                   </div>
@@ -117,8 +146,8 @@ function App() {
                       min="0"
                       max="100"
                       step="0.01"
-                      value={longTermInterestRate}
-                      onChange={(e) => setLongTermInterestRate(Math.max(0, Number(e.target.value)))}
+                      value={draftLongTermInterestRate}
+                      onChange={(e) => setDraftLongTermInterestRate(Math.max(0, Number(e.target.value)))}
                       className="input-field"
                     />
                   </div>
@@ -131,11 +160,17 @@ function App() {
                       min="0"
                       max="100"
                       step="0.01"
-                      value={shortTermInterestRate}
-                      onChange={(e) => setShortTermInterestRate(Math.max(0, Number(e.target.value)))}
+                      value={draftShortTermInterestRate}
+                      onChange={(e) => setDraftShortTermInterestRate(Math.max(0, Number(e.target.value)))}
                       className="input-field"
                     />
                   </div>
+                </div>
+
+                <div className="settings-actions">
+                  <button type="button" className="save-settings-btn" onClick={saveSettings}>
+                    Save Settings
+                  </button>
                 </div>
               </aside>
             </div>
@@ -195,6 +230,12 @@ function App() {
                   max="84"
                 />
               </div>
+            </div>
+
+            <div className="calc-action-row">
+              <button type="button" className="primary-action-btn" onClick={applyInputs}>
+                Show Calculations
+              </button>
             </div>
 
             <div className="interest-rate-display">
@@ -278,7 +319,7 @@ function App() {
                   <h3>Payment Breakdown</h3>
                   <div className="breakdown-item">
                     <span>Price of E-Scooty:</span>
-                    <span className="value">₹{amount.toLocaleString('en-IN')}</span>
+                    <span className="value">₹{numericAmount.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="breakdown-item">
                     <span>Initial Interest (13%):</span>
